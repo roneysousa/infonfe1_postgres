@@ -1,0 +1,178 @@
+unit uFrmCadUF;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uFrmCadastro, ZAbstractRODataset, ZAbstractDataset, ZDataset,
+  DB, DBClient, Provider, ComCtrls, Grids, DBGrids, Buttons, StdCtrls,
+  ExtCtrls, DBCtrls, Mask;
+
+type
+  TfrmCadUF = class(TfrmCadastro)
+    dbeCodigo: TDBEdit;
+    Label3: TLabel;
+    dbeDescricao: TDBEdit;
+    cdsConsultarUF_CODIGO: TIntegerField;
+    cdsConsultarUF_DESCRICAO: TStringField;
+    procedure BtAdicionarClick(Sender: TObject);
+    procedure dsCadastroDataChange(Sender: TObject; Field: TField);
+    procedure BtEditarClick(Sender: TObject);
+    procedure BtExcluirClick(Sender: TObject);
+    procedure BtGravarClick(Sender: TObject);
+  private
+    { Private declarations }
+    novo, alterar, apagar : String;
+    procedure Registro;
+    procedure Buscar(aCodigo : String);
+    function ValidarCampos() : Boolean;
+  public
+    { Public declarations }
+  end;
+
+var
+  frmCadUF: TfrmCadUF;
+
+implementation
+
+uses uDMDados, uFuncoes, uFrmNEFMain;
+
+{$R *.dfm}
+
+{ TfrmCadUF }
+
+procedure TfrmCadUF.Buscar(aCodigo: String);
+begin
+     uFuncoes.FilterCDS(DMDados.cdsUF, fsInteger, aCodigo);
+end;
+
+procedure TfrmCadUF.Registro;
+begin
+     uFuncoes.RefreshCDS(DMDados.cdsConfig);
+     //
+     uFuncoes.FilterCDS(DMDados.cdsUF, fsInteger, InttoStr(uFuncoes.mvcodigo('UF_CODIGO','TABELA_UF')));
+     //
+     PageControl1.ActivePageIndex := 0;
+end;
+
+function TfrmCadUF.ValidarCampos: Boolean;
+begin
+     Result := False;
+     // Codigo
+     If uFuncoes.Empty(dbeCodigo.Text) Then
+       Begin
+           Application.MessageBox('Digite o código da UF.','ATENÇÃO',
+               MB_OK+MB_ICONINFORMATION+MB_APPLMODAL);
+           dbeCodigo.SetFocus;
+           Exit;
+       End;
+       // Descricao
+       If uFuncoes.Empty(dbeDescricao.Text) Then
+        begin
+           Application.MessageBox('Digite a sigla da UF.','ATENÇÃO',
+               MB_OK+MB_ICONINFORMATION+MB_APPLMODAL);
+           dbeDescricao.SetFocus;
+           Exit;
+        End;
+      //
+      Result := True;
+end;
+
+procedure TfrmCadUF.BtAdicionarClick(Sender: TObject);
+begin
+  inherited;
+    If (dsCadastro.DataSet.State in [dsBrowse]) Then
+     begin
+          //
+          With dsCadastro.DataSet do
+            begin
+                 Append;
+                 dbeCodigo.SetFocus;
+            End;
+     End;
+end;
+
+procedure TfrmCadUF.dsCadastroDataChange(Sender: TObject; Field: TField);
+begin
+  inherited;
+     dbeCodigo.Enabled := dsCadastro.DataSet.State in [dsInsert];
+end;
+
+procedure TfrmCadUF.BtEditarClick(Sender: TObject);
+begin
+  inherited;
+    if  not (dsCadastro.DataSet.IsEmpty) and (dsCadastro.DataSet.RecordCount > 0) then
+      Begin
+           dsCadastro.DataSet.Edit;
+           dbeDescricao.setfocus;
+      End;
+end;
+
+procedure TfrmCadUF.BtExcluirClick(Sender: TObject);
+Var
+     iUsuario : Integer;
+     aCodigo  : String;
+begin
+   inherited;
+   if  not (dsCadastro.DataSet.IsEmpty) and (dsCadastro.DataSet.RecordCount > 0) then
+   begin
+       aCodigo := uFuncoes.StrZero(dmDados.cdsUFUF_CODIGO.AsString, 2) + ' - ' + dmDados.cdsUFUF_DESCRICAO.AsString;
+       iUsuario := StrtoInt(uFrmNEFMain.M_CDUSUA);
+       //
+       If Application.MessageBox('Deseja excluir esta UF?' , 'Exclusão de registro',
+                    MB_YESNO+MB_ICONQUESTION+MB_DEFBUTTON2+MB_APPLMODAL) = ID_YES Then
+       Begin
+            //
+            dmDados.cdsUF.Delete;
+            dmDados.cdsUF.ApplyUpdates(0);
+            //
+            If not (dmDados.IncluirTarefaUsuario(iUsuario,
+               'Excluiu UF : '+aCodigo+' *F*')) Then
+                 ShowMessage('Erro ao adicionar tarefa do usuário.');
+            //
+            REGISTRO;
+       end
+       else
+            Application.MessageBox('Não ha registro a ser excluido','ATENÇÃO',
+              MB_OK+MB_ICONINFORMATION+MB_APPLMODAL);
+   End;
+end;
+
+procedure TfrmCadUF.BtGravarClick(Sender: TObject);
+Var
+   iUsuario : Integer;
+begin
+      If not (ValidarCampos) Then
+         Exit;
+      //
+      try
+          //
+          iUsuario := StrtoInt(uFrmNEFMain.M_CDUSUA);
+          //
+          If (dsCadastro.DataSet.State in [dsInsert]) Then
+                 If not (dmDados.IncluirTarefaUsuario( iUsuario,
+                     'Incluiu UF : '+uFuncoes.StrZero(dmDados.cdsUFUF_CODIGO.AsString,2)+' *F*')) Then
+                     ShowMessage('Erro ao adicionar tarefa do usuário.')
+            Else
+                 If not (dmDados.IncluirTarefaUsuario(iUsuario,
+                     'Alterou UF : '+uFuncoes.StrZero(dmDados.cdsUFUF_CODIGO.AsString,2)+' *F*')) Then
+                     ShowMessage('Erro ao adicionar tarefa do usuário.');
+          //
+          dsCadastro.DataSet.Post;
+          DMDados.cdsUF.ApplyUpdates(0);
+          //
+          Application.MessageBox(PChar(MSG_OK),
+              'ATENÇÃO', MB_OK+MB_ICONINFORMATION+MB_APPLMODAL);
+     Except
+          on Exc:Exception do
+            begin
+               Application.MessageBox(PChar(MSG_ERRO+#13+Exc.Message),
+                 'Erro', MB_OK+MB_ICONSTOP+MB_APPLMODAL);
+               BtCancelarClick(Sender);
+               //
+            End;
+     End;
+     inherited;
+end;
+
+end.

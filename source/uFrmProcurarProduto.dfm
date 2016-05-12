@@ -1,0 +1,339 @@
+object frmLocalizaProduto: TfrmLocalizaProduto
+  Left = 192
+  Top = 117
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsDialog
+  Caption = 'Procurar Produto'
+  ClientHeight = 422
+  ClientWidth = 683
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poScreenCenter
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 683
+    Height = 65
+    Align = alTop
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 13
+      Top = 12
+      Width = 48
+      Height = 13
+      Caption = 'Descri'#231#227'o'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      Transparent = True
+    end
+    object edtNMDESC: TEdit
+      Left = 13
+      Top = 29
+      Width = 644
+      Height = 21
+      CharCase = ecUpperCase
+      MaxLength = 13
+      TabOrder = 0
+      OnChange = edtNMDESCChange
+      OnKeyDown = edtNMDESCKeyDown
+      OnKeyPress = edtNMDESCKeyPress
+    end
+  end
+  object Panel2: TPanel
+    Left = 0
+    Top = 65
+    Width = 683
+    Height = 265
+    Align = alClient
+    TabOrder = 1
+    object GridProdutos: TDBGrid
+      Left = 1
+      Top = 1
+      Width = 681
+      Height = 263
+      Align = alClient
+      DataSource = dsConsultar
+      Options = [dgTitles, dgIndicator, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]
+      ReadOnly = True
+      TabOrder = 0
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'MS Sans Serif'
+      TitleFont.Style = []
+      Columns = <
+        item
+          Alignment = taCenter
+          Expanded = False
+          FieldName = 'PRO_CODIGO'
+          Title.Alignment = taCenter
+          Title.Caption = 'C'#243'digo'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clWindowText
+          Title.Font.Height = -11
+          Title.Font.Name = 'Verdana'
+          Title.Font.Style = [fsBold]
+          Width = 88
+          Visible = True
+        end
+        item
+          Alignment = taCenter
+          Expanded = False
+          FieldName = 'PRO_REFERENCIA'
+          Title.Alignment = taCenter
+          Title.Caption = 'Refer'#234'ncia'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clWindowText
+          Title.Font.Height = -11
+          Title.Font.Name = 'Verdana'
+          Title.Font.Style = [fsBold]
+          Width = 80
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'PRO_DESCRICAO'
+          Title.Caption = 'Descri'#231#227'o'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clWindowText
+          Title.Font.Height = -11
+          Title.Font.Name = 'Verdana'
+          Title.Font.Style = [fsBold]
+          Width = 219
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'for_nome'
+          Title.Caption = 'Fornecedor'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clWindowText
+          Title.Font.Height = -11
+          Title.Font.Name = 'Verdana'
+          Title.Font.Style = [fsBold]
+          Width = 115
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'UNI_CODIGO'
+          Title.Caption = 'Und.'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clWindowText
+          Title.Font.Height = -11
+          Title.Font.Name = 'Verdana'
+          Title.Font.Style = [fsBold]
+          Visible = False
+        end
+        item
+          Expanded = False
+          FieldName = 'PRO_VLVENDA'
+          Title.Alignment = taRightJustify
+          Title.Caption = 'Vl.Unit'#225'rio'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clWindowText
+          Title.Font.Height = -11
+          Title.Font.Name = 'Verdana'
+          Title.Font.Style = [fsBold]
+          Width = 78
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'est_quantidade'
+          Title.Alignment = taRightJustify
+          Title.Caption = 'Estoque'
+          Title.Font.Charset = ANSI_CHARSET
+          Title.Font.Color = clWindowText
+          Title.Font.Height = -11
+          Title.Font.Name = 'Verdana'
+          Title.Font.Style = [fsBold]
+          Width = 61
+          Visible = True
+        end>
+    end
+  end
+  object Panel3: TPanel
+    Left = 0
+    Top = 330
+    Width = 683
+    Height = 51
+    Align = alBottom
+    TabOrder = 2
+    object Label2: TLabel
+      Left = 13
+      Top = 4
+      Width = 57
+      Height = 13
+      Caption = 'Localiza'#231#227'o'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      Transparent = True
+    end
+    object DBEdit1: TDBEdit
+      Left = 13
+      Top = 20
+      Width = 644
+      Height = 21
+      TabStop = False
+      Color = clSilver
+      DataField = 'PRO_LOCALIZACAO'
+      DataSource = dsConsultar
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clBlue
+      Font.Height = -11
+      Font.Name = 'MS Sans Serif'
+      Font.Style = [fsBold]
+      ParentFont = False
+      ReadOnly = True
+      TabOrder = 0
+    end
+  end
+  object Panel4: TPanel
+    Left = 0
+    Top = 381
+    Width = 683
+    Height = 41
+    Align = alBottom
+    Color = clNavy
+    TabOrder = 3
+    object btnConfirme: TBitBtn
+      Left = 492
+      Top = 8
+      Width = 75
+      Height = 25
+      Caption = '&OK'
+      TabOrder = 0
+      OnClick = btnConfirmeClick
+      Kind = bkOK
+    end
+    object BitBtn1: TBitBtn
+      Left = 576
+      Top = 8
+      Width = 75
+      Height = 25
+      Caption = '&Cancelar'
+      TabOrder = 1
+      OnClick = BitBtn1Click
+      Kind = bkCancel
+    end
+  end
+  object dsConsultar: TDataSource
+    DataSet = cdsConsultar
+    Left = 156
+    Top = 162
+  end
+  object zqryConsultar: TZQuery
+    Connection = dmDados.ZConexao
+    SQL.Strings = (
+      
+        'Select P."PRO_CODIGO", P."PRO_BARRAS", P."PRO_DESCRICAO", P."PRO' +
+        '_REFERENCIA",'
+      
+        'P."PRO_VLFRACAO", P."PRO_VLVENDA", P."UNI_CODIGO", P."FOR_CODIGO' +
+        '", '
+      'P."PRO_LOCALIZACAO", '
+      '(Select "FOR_FANTASIA" from "FORNECEDORES" F'
+      'Where (F."FOR_CODIGO" = P."FOR_CODIGO")) AS FOR_NOME,'
+      '(Select E."EST_QUANTIDADE" from "ESTOQUE" E'
+      'Where (E."EST_PRODUTO" = P."PRO_CODIGO") '
+      'AND (E."EST_CODLOJA" = :pCDLOJA)) AS EST_QUANTIDADE'
+      'from "PRODUTOS" P')
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'pCDLOJA'
+        ParamType = ptInput
+      end>
+    Left = 228
+    Top = 160
+    ParamData = <
+      item
+        DataType = ftInteger
+        Name = 'pCDLOJA'
+        ParamType = ptInput
+      end>
+  end
+  object dspConsultar: TDataSetProvider
+    DataSet = zqryConsultar
+    Options = [poAllowCommandText]
+    Left = 300
+    Top = 162
+  end
+  object cdsConsultar: TClientDataSet
+    Aggregates = <>
+    Params = <
+      item
+        DataType = ftInteger
+        Name = 'pCDLOJA'
+        ParamType = ptInput
+      end>
+    ProviderName = 'dspConsultar'
+    Left = 364
+    Top = 162
+    object cdsConsultarPRO_CODIGO: TStringField
+      FieldName = 'PRO_CODIGO'
+      Required = True
+      Size = 13
+    end
+    object cdsConsultarPRO_BARRAS: TStringField
+      FieldName = 'PRO_BARRAS'
+      Size = 13
+    end
+    object cdsConsultarPRO_DESCRICAO: TStringField
+      FieldName = 'PRO_DESCRICAO'
+      Size = 60
+    end
+    object cdsConsultarPRO_REFERENCIA: TStringField
+      FieldName = 'PRO_REFERENCIA'
+      Size = 14
+    end
+    object cdsConsultarPRO_VLFRACAO: TFloatField
+      FieldName = 'PRO_VLFRACAO'
+      DisplayFormat = '##,##0.#000'
+      EditFormat = '##,##0.#000'
+    end
+    object cdsConsultarPRO_VLVENDA: TFloatField
+      FieldName = 'PRO_VLVENDA'
+      DisplayFormat = '##,##0.#000'
+      EditFormat = '##,##0.#000'
+    end
+    object cdsConsultarUNI_CODIGO: TStringField
+      FieldName = 'UNI_CODIGO'
+      Size = 2
+    end
+    object cdsConsultarFOR_CODIGO: TIntegerField
+      FieldName = 'FOR_CODIGO'
+    end
+    object cdsConsultarPRO_LOCALIZACAO: TStringField
+      FieldName = 'PRO_LOCALIZACAO'
+      Size = 80
+    end
+    object cdsConsultarfor_nome: TStringField
+      FieldName = 'for_nome'
+      ReadOnly = True
+      Size = 255
+    end
+    object cdsConsultarest_quantidade: TFloatField
+      FieldName = 'est_quantidade'
+      ReadOnly = True
+      DisplayFormat = '#,##0.#00'
+      EditFormat = '#,##0.#00'
+    end
+  end
+end

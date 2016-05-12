@@ -1,0 +1,64 @@
+unit uFrmLocFornecedorNovo;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, uFrmLocPadrao, DBClient, Provider, DB, ZAbstractRODataset,
+  ZAbstractDataset, ZDataset, ComCtrls, Grids, DBGrids, StdCtrls, ExtCtrls;
+
+type
+  TfrmLocFornecedorNovo = class(TfrmLocPadrao)
+    cdsConsultarCLI_CODIGO: TIntegerField;
+    cdsConsultarCLI_RAZAO: TStringField;
+    cdsConsultarCLI_FANTASIA: TStringField;
+    cdsConsultarCLI_CLIFOR: TStringField;
+    procedure edtConsultarChange(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmLocFornecedorNovo: TfrmLocFornecedorNovo;
+
+implementation
+
+uses uDMDados, uFuncoes;
+
+{$R *.dfm}
+
+procedure TfrmLocFornecedorNovo.edtConsultarChange(Sender: TObject);
+Var
+   Texto : String;
+begin
+  inherited;
+       //
+       Texto := 'Select "CLI_CODIGO", "CLI_RAZAO", "CLI_FANTASIA", "CLI_CLIFOR" from "CLIENTES" ';
+       Texto := Texto + 'Where ("CLI_CLIFOR" = '+QuotedStr('F')+') AND "CLI_FANTASIA" like :pNOME ';
+       //
+       If not uFuncoes.Empty(edtConsultar.Text) Then
+        begin
+            cdsConsultar.Close;
+            with zqryConsultar do
+            begin
+                Close;
+                Active := False;
+                //
+                Texto := Texto +'where (UPPER("CLI_FANTASIA") like '+QuotedStr(Copy(edtConsultar.Text,1,49)+'%')+') ';
+                Texto := Texto +' order by "CLI_FANTASIA" ';
+                //
+                SQL.Add(Texto);
+                //
+                Active := True;
+            end;
+            cdsConsultar.FetchParams;
+            cdsConsultar.Open;
+        End
+        Else
+            cdsConsultar.Close;
+  inherited;
+end;
+
+end.

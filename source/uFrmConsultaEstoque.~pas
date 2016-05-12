@@ -1,0 +1,183 @@
+unit uFrmConsultaEstoque;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, ExtCtrls, Buttons, Grids, DBGrids, DB,
+  ZAbstractRODataset, ZAbstractDataset, ZDataset, DBClient, Provider;
+
+type
+  TFrmConsultaEstoque = class(TForm)
+    Panel1: TPanel;
+    Label1: TLabel;
+    cmbLoja: TComboBox;
+    rgConsultar: TRadioGroup;
+    lblConsultar: TLabel;
+    edtConsultar: TEdit;
+    Panel2: TPanel;
+    Panel3: TPanel;
+    sbProximo: TSpeedButton;
+    sbUltimo: TSpeedButton;
+    sbAnterior: TSpeedButton;
+    sbPrimeiro: TSpeedButton;
+    grdConsultar: TDBGrid;
+    ZQryConsulta: TZQuery;
+    dspConsulta: TDataSetProvider;
+    cdsConsultar: TClientDataSet;
+    dsConsultar: TDataSource;
+    cdsConsultarEST_CODLOJA: TIntegerField;
+    cdsConsultarEST_PRODUTO: TStringField;
+    cdsConsultarPRO_DESCRICAO: TStringField;
+    cdsConsultarEST_QUANTIDADE: TFloatField;
+    Panel4: TPanel;
+    procedure rgConsultarClick(Sender: TObject);
+    procedure edtConsultarKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure edtConsultarKeyPress(Sender: TObject; var Key: Char);
+    procedure dsConsultarDataChange(Sender: TObject; Field: TField);
+    procedure cmbLojaChange(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure sbPrimeiroClick(Sender: TObject);
+    procedure sbAnteriorClick(Sender: TObject);
+    procedure sbProximoClick(Sender: TObject);
+    procedure sbUltimoClick(Sender: TObject);
+    procedure edtConsultarChange(Sender: TObject);
+  private
+    { Private declarations }
+    procedure Consultar(iLoja : Integer);
+  public
+    { Public declarations }
+  end;
+
+var
+  FrmConsultaEstoque: TFrmConsultaEstoque;
+
+implementation
+
+uses uDMDados, uFuncoes;
+
+{$R *.dfm}
+
+procedure TFrmConsultaEstoque.rgConsultarClick(Sender: TObject);
+begin
+  case rgConsultar.ItemIndex of
+    0:
+    begin
+      lblConsultar.Caption := 'Código';
+      edtConsultar.MaxLength := 14;
+      edtConsultar.Clear;
+    end;
+    1:
+    begin
+      lblConsultar.Caption := 'Descrição';
+      edtConsultar.Clear;
+    end;
+  end;
+  if edtConsultar.CanFocus then
+    edtConsultar.SetFocus;
+end;
+
+procedure TFrmConsultaEstoque.edtConsultarKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+   If (cdsConsultar.Active = True) Then
+   Begin
+     IF (KEY = VK_UP) then
+          cdsConsultar.Prior;
+     //
+     IF (KEY = VK_DOWN) then
+          cdsConsultar.Next;
+   End;
+end;
+
+procedure TFrmConsultaEstoque.edtConsultarKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  if rgConsultar.ItemIndex = 0 then
+  begin
+    if not( key in['0'..'9', #8, #13] ) then
+    begin
+      beep;
+      key:=#0;
+    end;
+  end;
+  //
+end;
+
+procedure TFrmConsultaEstoque.dsConsultarDataChange(Sender: TObject;
+  Field: TField);
+begin
+  sbPrimeiro.Enabled := (((Sender as TDataSource).DataSet.Active) and not (Sender as TDataSource).DataSet.IsEmpty) and not ((Sender as TDataSource).DataSet.Bof);
+  sbAnterior.Enabled := sbPrimeiro.Enabled;
+  sbUltimo.Enabled := (((Sender as TDataSource).DataSet.Active) and not (Sender as TDataSource).DataSet.IsEmpty) and not ((Sender as TDataSource).DataSet.Eof);
+  sbProximo.Enabled := sbUltimo.Enabled;
+end;
+
+procedure TFrmConsultaEstoque.Consultar(iLoja: Integer);
+Var
+   aTexto : String;
+begin
+     aTexto := 'Select E."EST_CODLOJA", E."EST_PRODUTO", P."PRO_DESCRICAO", E."EST_QUANTIDADE" from "ESTOQUE" E ';
+     aTexto := aTexto + 'INNER join "PRODUTOS" P ON P."PRO_CODIGO" = E."EST_PRODUTO" ';
+     aTexto := aTexto + 'Where (E."EST_CODLOJA" = :pCODLOJA) order by P."PRO_DESCRICAO" ';
+     //
+     With cdsConsultar do
+      begin
+           DisableControls;
+           Close;
+           CommandText := aTexto;
+           Params[0].AsInteger := iLoja;
+           Open;
+           EnableControls;
+      End;
+end;
+
+procedure TFrmConsultaEstoque.cmbLojaChange(Sender: TObject);
+begin
+     If not ufuncoes.Empty(cmbLoja.Text) Then
+         Consultar(dmDados.GetCodigoLoja(cmbLoja.Text));
+end;
+
+procedure TFrmConsultaEstoque.FormShow(Sender: TObject);
+begin
+     dmDados.CarregarLojas(cmbLoja);
+end;
+
+procedure TFrmConsultaEstoque.sbPrimeiroClick(Sender: TObject);
+begin
+     If (cdsConsultar.Active ) Then
+        dsConsultar.DataSet.First;
+end;
+
+procedure TFrmConsultaEstoque.sbAnteriorClick(Sender: TObject);
+begin
+     If (cdsConsultar.Active ) Then
+         dsConsultar.DataSet.Prior;
+end;
+
+procedure TFrmConsultaEstoque.sbProximoClick(Sender: TObject);
+begin
+     If (cdsConsultar.Active ) Then
+        dsConsultar.DataSet.Next;
+end;
+
+procedure TFrmConsultaEstoque.sbUltimoClick(Sender: TObject);
+begin
+     If (cdsConsultar.Active ) Then
+        dsConsultar.DataSet.Last;
+end;
+
+procedure TFrmConsultaEstoque.edtConsultarChange(Sender: TObject);
+begin
+     If not uFuncoes.Empty (edtConsultar.Text)
+      and not (cdsConsultar.IsEmpty) Then
+     Begin
+          case rgConsultar.ItemIndex of
+              0: cdsConsultar.Locate('EST_PRODUTO',uFuncoes.StrZero(edtConsultar.Text,13), [loPartialKey]);
+              1: cdsConsultar.Locate('PRO_DESCRICAO',edtConsultar.Text, [loPartialKey]);
+          end;
+     End;
+end;
+
+end.
